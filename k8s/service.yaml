@@ -1,0 +1,25 @@
+# Internal ClusterIP service for MongoDB (not accessible from outside)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+spec:
+  selector:
+    app: mongo
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
+---
+# Public LoadBalancer — exposes the app with a public IP
+apiVersion: v1
+kind: Service
+metadata:
+  name: quick-task-hub-service
+spec:
+  selector:
+    app: quick-task-hub
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer

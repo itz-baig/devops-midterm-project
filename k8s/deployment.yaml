@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-task-hub
+  labels:
+    app: quick-task-hub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quick-task-hub
+  template:
+    metadata:
+      labels:
+        app: quick-task-hub
+    spec:
+      containers:
+      - name: quick-task-hub
+        image: YOUR_DOCKERHUB_USERNAME/quick-task-hub:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          value: "mongodb://mongo-service:27017/taskdb"
+        - name: PORT
+          value: "3000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:7
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongo-storage
+        emptyDir: {}
