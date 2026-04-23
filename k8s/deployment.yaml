@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: quick-task-hub
-        image: YOUR_DOCKERHUB_USERNAME/quick-task-hub:latest
+        image: itzbaig/quick-task-hub:fa23-bcs-201
         ports:
         - containerPort: 3000
         env:
