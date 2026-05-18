@@ -29,7 +29,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # ── Configuration ─────────────────────────────────────────────────────────────
-BASE_URL = "http://localhost:80"   # Frontend (nginx) — change to Azure IP for AKS
+BASE_URL = "http://localhost:8080"   # Frontend (nginx) — change to Azure IP for AKS
 API_URL  = "http://localhost:3000" # Backend direct (for API test)
 
 

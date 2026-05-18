@@ -85,11 +85,11 @@ docker-compose logs -f
 **Services:**
 | Container | Port | Description |
 |---|---|---|
-| `quick-task-frontend` | `:80` | Nginx serving frontend |
+| `quick-task-frontend` | `:8080` | Nginx serving frontend |
 | `quick-task-backend` | `:3000` | Express REST API |
 | `task-mongo` | `:27017` | MongoDB database |
 
-Access the app at: **http://localhost**
+Access the app at: **http://localhost:8080**
 
 ---
 
