@@ -1,36 +1,11 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: quick-task-hub
-  labels:
-    app: quick-task-hub
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: quick-task-hub
-  template:
-    metadata:
-      labels:
-        app: quick-task-hub
-    spec:
-      containers:
-      - name: quick-task-hub
-        image: itzbaig/quick-task-hub:fa23-bcs-201
-        ports:
-        - containerPort: 3000
-        env:
-        - name: MONGO_URI
-          value: "mongodb://mongo-service:27017/taskdb"
-        - name: PORT
-          value: "3000"
----
+# ── MongoDB Deployment ──────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongo
   labels:
     app: mongo
+    tier: database
 spec:
   replicas: 1
   selector:
@@ -40,6 +15,7 @@ spec:
     metadata:
       labels:
         app: mongo
+        tier: database
     spec:
       containers:
       - name: mongo
@@ -49,6 +25,91 @@ spec:
         volumeMounts:
         - name: mongo-storage
           mountPath: /data/db
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
       volumes:
       - name: mongo-storage
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: mongo-pvc
+---
+# ── Backend Deployment ──────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-task-backend
+  labels:
+    app: quick-task-backend
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quick-task-backend
+  template:
+    metadata:
+      labels:
+        app: quick-task-backend
+        tier: backend
+    spec:
+      containers:
+      - name: quick-task-backend
+        image: itzbaig/fa23-bcs-201:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          value: "mongodb://mongo-service:27017/taskdb"
+        - name: PORT
+          value: "3000"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+---
+# ── Frontend Deployment ─────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-task-frontend
+  labels:
+    app: quick-task-frontend
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quick-task-frontend
+  template:
+    metadata:
+      labels:
+        app: quick-task-frontend
+        tier: frontend
+    spec:
+      containers:
+      - name: quick-task-frontend
+        image: itzbaig/fa23-bcs-201-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"

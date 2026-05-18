@@ -1,0 +1,13 @@
+# ── PersistentVolumeClaim for MongoDB Data ──────────────────────────────────
+# Ensures MongoDB data persists across pod restarts on AKS
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: managed-csi   # Azure default storage class

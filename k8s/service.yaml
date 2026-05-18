@@ -1,25 +1,50 @@
-# Internal ClusterIP service for MongoDB (not accessible from outside)
+# ── MongoDB Internal Service (ClusterIP) ────────────────────────────────────
+# Only accessible from within the cluster — backend connects to this
 apiVersion: v1
 kind: Service
 metadata:
   name: mongo-service
+  labels:
+    app: mongo
 spec:
   selector:
     app: mongo
   ports:
-  - port: 27017
+  - protocol: TCP
+    port: 27017
     targetPort: 27017
   type: ClusterIP
 ---
-# Public LoadBalancer — exposes the app with a public IP
+# ── Backend Internal Service (ClusterIP) ────────────────────────────────────
+# Frontend (nginx) proxies /api/ calls here; not exposed externally
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels:
+    app: quick-task-backend
+spec:
+  selector:
+    app: quick-task-backend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+# ── Frontend Public Service (LoadBalancer) ──────────────────────────────────
+# Exposes the nginx frontend with a public Azure IP on port 80
 apiVersion: v1
 kind: Service
 metadata:
   name: quick-task-hub-service
+  labels:
+    app: quick-task-frontend
 spec:
   selector:
-    app: quick-task-hub
+    app: quick-task-frontend
   ports:
-  - port: 80
-    targetPort: 3000
+  - protocol: TCP
+    port: 80
+    targetPort: 80
   type: LoadBalancer
