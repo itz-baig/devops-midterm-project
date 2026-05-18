@@ -127,21 +127,37 @@ Pipeline file: `.github/workflows/ci-cd.yml`
 
 ## ☁️ Section C: Kubernetes on AKS
 
-### Apply Manifests
-
+### 1. Generate Azure Service Principal (Credentials Secret)
+Run the following unique command to output your `AZURE_CREDENTIALS` JSON secret:
 ```powershell
 az login
-az aks get-credentials --resource-group devops-midterm-rg --name student-app-aks
+az ad sp create-for-rbac --name "github-actions-sp-final" --role contributor --scopes /subscriptions/c3673867-9db1-4e60-8f78-6ca0e354bf8c/resourceGroups/devops-midterm-rg --sdk-auth
+```
 
-# Apply in order
+### 2. Connect to your Cluster
+Connect to your lightweight AKS cluster running in the policy-approved region:
+```powershell
+az aks get-credentials --resource-group devops-midterm-rg --name student-app-aks --overwrite-existing
+```
+
+### 3. Deploy Manifests
+Deploy the database storage volume, server configurations, and ingress LoadBalancer:
+```powershell
+# Apply resources in order
 kubectl apply -f k8s/mongo-pvc.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 
-# Verify pods
+# Restart pods to pull latest images from Docker Hub
+kubectl rollout restart deployment/quick-task-backend
+kubectl rollout restart deployment/quick-task-frontend
+
+# Monitor deployment progress
 kubectl get pods
 kubectl get svc
 ```
+
+Access the live cloud deployment at: **[http://4.224.235.81](http://4.224.235.81)**
 
 ### K8s Resources
 
@@ -153,16 +169,21 @@ kubectl get svc
 | `mongo-pvc`              | PVC                    | Persistent storage for MongoDB |
 | `mongo-service`          | Service (ClusterIP)    | Internal DB access             |
 | `app`                    | Service (ClusterIP)    | Internal backend access        |
-| `quick-task-hub-service` | Service (LoadBalancer) | **Public Azure IP**      |
+| `quick-task-hub-service` | Service (LoadBalancer) | **Public Azure IP** (http://4.224.235.81) |
 
 ---
 
-## 🧪 Section D: Selenium Tests
+## 🧪 Section D: Selenium Automated Testing
 
+The Selenium testing suite is built using `pytest` and runs **100% offline and instantly** using a locally bundled `chromedriver.exe` inside the [selenium/chromedriver.exe](file:///c:/Users/Hassan/DevopsProjects/devopsMidTerm/selenium/chromedriver.exe) folder, perfectly matching Google Chrome version `148`.
+
+### Run the Test Suite
 ```powershell
-cd selenium
-pip install -r requirements.txt
-pytest tests/test_suite.py -v --html=report.html
+# Install offline dependencies
+pip install -r selenium/requirements.txt
+
+# Run the 14 test methods inside the 4 core test cases
+python -m pytest selenium/tests/test_suite.py -v --html=report.html --self-contained-html
 ```
 
 | Test            | Description                                                           |
