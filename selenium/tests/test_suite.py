@@ -28,6 +28,8 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
+import os
+
 # ── Configuration ─────────────────────────────────────────────────────────────
 BASE_URL = "http://localhost:8080"   # Frontend (nginx) — change to Azure IP for AKS
 API_URL  = "http://localhost:3000" # Backend direct (for API test)
@@ -36,14 +38,17 @@ API_URL  = "http://localhost:3000" # Backend direct (for API test)
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 @pytest.fixture(scope="module")
 def driver():
-    """Set up headless Chrome WebDriver (shared across all tests in module)."""
+    """Set up headless Chrome WebDriver using locally bundled chromedriver.exe."""
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1280,800")
 
-    service = Service(ChromeDriverManager().install())
+    # Locate local chromedriver.exe relative to this test file
+    local_driver = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "chromedriver.exe"))
+    service = Service(executable_path=local_driver)
+    
     drv = webdriver.Chrome(service=service, options=options)
     drv.implicitly_wait(10)
 

@@ -1,4 +1,5 @@
 # ⚡ Quick-Task Hub
+
 ### DevOps Final Exam Project | FA23-BCS-201
 
 A **3-tier cloud-native task management application** built and deployed using modern DevOps practices.
@@ -64,13 +65,15 @@ devopsMidTerm/
 ## 🐳 Section A: Containerization
 
 ### Dockerfiles
-| Service | File | Base Image |
-|---|---|---|
-| Frontend | `frontend/Dockerfile` | `nginx:alpine` |
-| Backend | `backend/Dockerfile` | `node:18-alpine` |
-| Database | `mongo:7` (official image) | — |
+
+| Service  | File                         | Base Image         |
+| -------- | ---------------------------- | ------------------ |
+| Frontend | `frontend/Dockerfile`      | `nginx:alpine`   |
+| Backend  | `backend/Dockerfile`       | `node:18-alpine` |
+| Database | `mongo:7` (official image) | —                 |
 
 ### Run Locally with Docker Compose
+
 ```powershell
 # Build and start all 3 services
 docker-compose up -d --build
@@ -83,11 +86,12 @@ docker-compose logs -f
 ```
 
 **Services:**
-| Container | Port | Description |
-|---|---|---|
-| `quick-task-frontend` | `:8080` | Nginx serving frontend |
-| `quick-task-backend` | `:3000` | Express REST API |
-| `task-mongo` | `:27017` | MongoDB database |
+
+| Container               | Port       | Description            |
+| ----------------------- | ---------- | ---------------------- |
+| `quick-task-frontend` | `:8080`  | Nginx serving frontend |
+| `quick-task-backend`  | `:3000`  | Express REST API       |
+| `task-mongo`          | `:27017` | MongoDB database       |
 
 Access the app at: **http://localhost:8080**
 
@@ -107,13 +111,15 @@ Pipeline file: `.github/workflows/ci-cd.yml`
 ```
 
 ### Required GitHub Secrets
-| Secret | Description |
-|---|---|
-| `DOCKERHUB_USERNAME` | `itzbaig` |
-| `DOCKERHUB_TOKEN` | Docker Hub access token |
-| `AZURE_CREDENTIALS` | Azure service principal JSON |
+
+| Secret                 | Description                  |
+| ---------------------- | ---------------------------- |
+| `DOCKERHUB_USERNAME` | `itzbaig`                  |
+| `DOCKERHUB_TOKEN`    | Docker Hub access token      |
+| `AZURE_CREDENTIALS`  | Azure service principal JSON |
 
 ### Docker Hub Images
+
 - **Backend:** `itzbaig/fa23-bcs-201:latest`
 - **Frontend:** `itzbaig/fa23-bcs-201-frontend:latest`
 
@@ -122,6 +128,7 @@ Pipeline file: `.github/workflows/ci-cd.yml`
 ## ☁️ Section C: Kubernetes on AKS
 
 ### Apply Manifests
+
 ```powershell
 az login
 az aks get-credentials --resource-group devops-midterm-rg --name student-app-aks
@@ -137,15 +144,16 @@ kubectl get svc
 ```
 
 ### K8s Resources
-| Resource | Kind | Description |
-|---|---|---|
-| `mongo` | Deployment | MongoDB database pod |
-| `quick-task-backend` | Deployment | Node.js API pod |
-| `quick-task-frontend` | Deployment | Nginx frontend pod |
-| `mongo-pvc` | PVC | Persistent storage for MongoDB |
-| `mongo-service` | Service (ClusterIP) | Internal DB access |
-| `app` | Service (ClusterIP) | Internal backend access |
-| `quick-task-hub-service` | Service (LoadBalancer) | **Public Azure IP** |
+
+| Resource                   | Kind                   | Description                    |
+| -------------------------- | ---------------------- | ------------------------------ |
+| `mongo`                  | Deployment             | MongoDB database pod           |
+| `quick-task-backend`     | Deployment             | Node.js API pod                |
+| `quick-task-frontend`    | Deployment             | Nginx frontend pod             |
+| `mongo-pvc`              | PVC                    | Persistent storage for MongoDB |
+| `mongo-service`          | Service (ClusterIP)    | Internal DB access             |
+| `app`                    | Service (ClusterIP)    | Internal backend access        |
+| `quick-task-hub-service` | Service (LoadBalancer) | **Public Azure IP**      |
 
 ---
 
@@ -157,36 +165,37 @@ pip install -r requirements.txt
 pytest tests/test_suite.py -v --html=report.html
 ```
 
-| Test | Description |
-|---|---|
-| **TC-01** | Homepage loads: title, header, form, and 4 stats cards present |
-| **TC-02** | Add task via form — task appears in list and stats update |
-| **TC-03** | Filter buttons (High Priority / Pending / All) work correctly |
+| Test            | Description                                                           |
+| --------------- | --------------------------------------------------------------------- |
+| **TC-01** | Homepage loads: title, header, form, and 4 stats cards present        |
+| **TC-02** | Add task via form — task appears in list and stats update            |
+| **TC-03** | Filter buttons (High Priority / Pending / All) work correctly         |
 | **TC-04** | `/api/health` returns HTTP 200 with `status: ok` and `db` field |
 
 ---
 
 ## 🔑 API Reference
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Health check — returns DB status |
-| `GET` | `/api/tasks` | Get all tasks (supports `?status=` & `?priority=` filters) |
-| `POST` | `/api/tasks` | Create a new task |
-| `PATCH` | `/api/tasks/:id` | Update a task |
-| `DELETE` | `/api/tasks/:id` | Delete a task |
+| Method     | Endpoint           | Description                                                    |
+| ---------- | ------------------ | -------------------------------------------------------------- |
+| `GET`    | `/api/health`    | Health check — returns DB status                              |
+| `GET`    | `/api/tasks`     | Get all tasks (supports `?status=` & `?priority=` filters) |
+| `POST`   | `/api/tasks`     | Create a new task                                              |
+| `PATCH`  | `/api/tasks/:id` | Update a task                                                  |
+| `DELETE` | `/api/tasks/:id` | Delete a task                                                  |
 
 ---
 
 ## 👨‍💻 Student Details
+
 - **Registration No:** FA23-BCS-201
-- **Name:** Hassan
+- **Name:** Ali Baig
 - **Project:** Quick-Task Hub
-- **Exam:** DevOps Final Exam 2026
 
 ---
 
 ## ⚠️ Cleanup (Run after Viva)
+
 ```powershell
 az group delete --name devops-midterm-rg --yes --no-wait
 ```
